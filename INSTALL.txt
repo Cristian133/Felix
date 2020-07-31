@@ -1,0 +1,281 @@
+##############################################################################
+#                                                                            #
+#               F3LIX => FELIX VERSION 3.10 06-03-2019                       #
+#                                                                            #
+##############################################################################
+
+
+##############################################################################
+
+DIRECCIONES WSAA y WSFE AFIP
+
+HOMOLOGACIÓN:
+$ wget https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl
+$ wget https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL
+
+PRODUCCIÓN:
+$ wget https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl
+$ wget https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL
+
+##############################################################################
+
+CHEQUEAR LIBRERIAS NECESARIAS:
+
+# zypper se gsoap
+Obteniendo los datos del repositorio...
+Leyendo los paquetes instalados...
+
+E | Nombre         | Resumen                                 | Tipo
+--+----------------+-----------------------------------------+---------
+i | gsoap-devel    | Development files for the gSOAP toolkit | paquete
+i | libgsoap-2_8-0 | Runtime libraries for gSOAP             | paquete
+i | libgsoap-devel | Development files for libgsoap          | paquete
+
+Debera verse esto si las librerias gsoap estan instaladas.
+
+# zypper se openssl
+Obteniendo los datos del repositorio...
+Leyendo los paquetes instalados...
+
+E | Nombre                        | Resumen                                                                      | Tipo
+--+-------------------------------+------------------------------------------------------------------------------+---------
+  | compat-openssl097g            | Secure Sockets y Transport Layer Security                                    | paquete
+  | gambas3-gb-openssl            | The Gambas openssl component                                                 | paquete
+  | gambas3-gb-openssl-debuginfo  | Debug information for package gambas3-gb-openssl                             | paquete
+  | libgnutls-openssl-devel       | Paquete de desarrollo para gnutls                                            | paquete
+  | libgnutls-openssl27           | GNU Transport Layer Security Library                                         | paquete
+i | libopenssl-devel              | Archivos y bibliotecas include necesarios para desarrollo                    | paquete
+  | libopenssl0_9_8               | Secure Sockets y Transport Layer Security                                    | paquete
+i | libopenssl1_0_0               | Secure Sockets y Transport Layer Security                                    | paquete
+  | libopenssl1_0_0-hmac          | HMAC files for FIPS-140-2 integrity checking of the openssl shared libraries | paquete
+  | libxmlsec1-openssl-devel      | OpenSSL crypto plugin for XML Security Library                               | paquete
+  | libxmlsec1-openssl1           | OpenSSL crypto plugin for XML Security Library                               | paquete
+  | libxmlsec1-openssl1-debuginfo | Debug information for package libxmlsec1-openssl1                            | paquete
+  | nss-compat-openssl-devel      | Biblioteca de compatibilidad a nivel de código fuente de OpenSSL a NSS       | paquete
+i | openssl                       | Secure Sockets y Transport Layer Security                                    | paquete
+  | openssl-doc                   | Additional Package Documentation                                             | paquete
+  | openssl-ibmca                 | The IBMCA OpenSSL dynamic engine                                             | paquete
+  | openssl_tpm_engine            | OpenSSL TPM interface engine plugin                                          | paquete
+  | perl-Crypt-OpenSSL-Bignum     | OpenSSL's multiprecision integer arithmetic                                  | paquete
+i | perl-Crypt-OpenSSL-RSA        | RSA encoding and decoding, using the openSSL libraries                       | paquete
+i | perl-Crypt-OpenSSL-Random     | Crypt::OpenSSL::Random Perl module                                           | paquete
+  | php5-openssl                  | PHP5 Extension Module                                                        | paquete
+  | python-pyOpenSSL              | Python wrapper module around the OpenSSL library                             | paquete
+  | python3-pyOpenSSL             | Python wrapper module around the OpenSSL library                             | paquete
+  | python3-pyOpenSSL-doc         | Python wrapper module around the OpenSSL library - Documentation             | paquete
+  | xmlsec1-openssl-devel         | OpenSSL crypto plugin for XML Security Library                               | paquete
+
+Debera verse esto si las librerias openssl estan instaladas.
+
+Si fuera necesario,
+INSTALAR LIBRERIAS EN SISTEMA OPERATIVO:
+# zypper in gsoap-devel libgsoap-devel openssl-devel
+
+##############################################################################
+
+INSTALACION FELIX:
+Copiar desde el $HOME del servidor CTYD al directorio /master/intercambio/WSERVICE/$emp
+del servidor remoto en archivo f3lix.tar.gz y descompartar:
+
+(Estamos en el server remoto)
+IMPORTANTE:
+chequear entorno correctamente seteado:
+$ echo $emp
+$ echo $cuitemp
+
+$ cd /master/intercambio/WSERVICE/$emp
+$ scp master@century-of.dyndns.org:/home/master/f3lix.tar.gz .
+$ tar xvzf f3lix.tar.gz
+
+$ cp custom/* $CUSTOM
+
+Esto copia los archivos necesarios en el custom. Son tres:
+1) facele.sh
+2) Nro_CAE.sh
+3) ultimoCAE.sh
+
+Esto arma el arbol de directorios correcto para que FELIX trabaje.
+
+COMPILAR FELIX CON MAKEFILE
+
+En este orden:
+$ make genera           -> 	COMPILA GSOAP: compila librerias gsoap para Producción.
+$ make	                -> 	COMPILA TODO.
+
+CERTIFICADOS:
+Copiar clave privada y certificado correspondiente provisto por AFIP.
+Estos deberan llevar los siguientes nombres:
+
+CLAVE PRIVADA: privada_$emp
+CERTIFICADO:   cert_$emp.crt
+
+Termina aqui el proceso de compilacion e instalacion.
+
+##############################################################################
+
+ARBOL DE DIRECTORIOS Y ARCHIVOS NECESARIOS:
+
+    * $CUSTOM/
+             |_ ultimoCAE.sh
+             |_ NroCAE.sh
+             |_ facele.sh
+
+   MULTIMPRESA/MULTIUSUARIO: si tenemos una sola empresa, la carpeta de trabajo es $emp.
+
+    * /master/intercambio/WSERVICE/$emp1/                              _
+                                   |     |_ README.txt                  |
+                                   |     |_ genera_tra.exe              |
+                                   |     |_ recibe_args.exe             |
+                                   |     |_ wsaa.exe                    |
+                                   |     |_ wsfe.exe                    |   Común para todas las configuraciones
+                                   |     |_ ulti.exe                    |
+                                   |     |_ consulta.exe                |
+                                   |     |_ makefile                    |
+                                   |     |_ pide_cae.sh                 |
+                                   |     |_ pide_ta.sh                 _|
+                                   |     |_ $user/
+                                   |     |       |_Logs/
+                                   |     |
+                                   |     |_certif/
+                                   |             |_ privada_$emp
+                                   |             |_ cert_$emp.crt
+                                   |_$emp2/                            _
+                                   |     |_ README.txt                  |
+                                   |     |_ genera_tra.exe              |
+                                   |     |_ recibe_args.exe             |
+                                   |     |_ wsaa.exe                    |
+                                   |     |_ wsfe.exe                    |   Común para todas las configuraciones
+                                   |     |_ ulti.exe                    |
+                                   |     |_ consulta.exe                |
+                                   |     |_ makefile                    |
+                                   |     |_ pide_cae.sh                 |
+                                   |     |_ pide_ta.sh                 _|
+                                   |     |_ $user/
+                                   |     |       |_Logs/
+                                   |     |
+                                   |     |_certif/
+                                   |             |_ privada_$emp
+                                   |             |_ cert_$emp.crt
+                                   |_$emp3/
+                                           |_ etcetera
+                                           |_ etcetera
+
+    MONOEMPRESA/MONOUSUARIO:
+
+    * /master/intercambio/WSERVICE/$emp/
+                                        |_ README.txt
+                                        |_ genera_tra.exe
+                                        |_ recibe_args.exe
+                                        |_ wsaa.exe
+                                        |_ wsfe.exe
+                                        |_ ulti.exe
+                                        |_ consulta.exe
+                                        |_ makefile
+                                        |_ pide_cae.sh
+                                        |_ pide_ta.sh
+                                        |_Logs/
+                                        |_certif/
+                                                |_ privada_$emp
+                                                |_ cert_$emp.crt
+
+##############################################################################
+
+RESULTADOS:
+
+    * pideCAE.sh escribe en:
+
+      /master/intercambio/WSERVICE/felix/$user/
+                                              |_ cae.txt
+                                              |_ Request.xml
+                                              |_ cae_??_????_????????_??????????????_????????.txt
+                                              |_ error.txt -> "Solo Observaciones, errores o eventos"
+                                              |_ Logs/
+                                                     |_ ??_????_????????.xml -> "de aquí lee errores el sistema"
+                                                     |_facele.log
+
+    * NroCAE.sh escribe en:
+
+      /master/intercambio/WSERVICE/$emp/$user/
+                                             |_ cae.txt
+                                             |_ error.txt -> "Solo Observaciones, errores o eventos"
+                                             |_ Logs/
+                                                    |_ NroCAE.log
+                                                    |_ NroCAE_??_????_????????_???????????????.txt  -> "datos del Comprobante"
+
+    * UltimoCAE.sh escribe en:
+
+      /master/intercambio/WSERVICE/$emp/$user/
+                                             |_ cae.txt
+                                             |_ Logs/
+                                                    |_ultimoCAE.log
+
+##############################################################################
+
+ARGUMENTOS:
+
+    $CUSTOM: el sistema comienza el proceso aqui.
+
+    * ultimoCAE.sh     llama a    ./ulti.exe $CUIT PtoVta TipoCbte $user
+                       escribe:   /master/intercambio/WSERVICE/$emp/$user/Logs/ultimoCAE.log
+
+    * NroCAE.sh        llama a    ./consulta.exe $CUIT PtoVta TipoCbte CbteDesde $user
+                       escribe    /master/intercambio/WSERVICE/$emp/$user/Logs/NroCAE.log
+
+    * facele.sh        llama a    ./pide_cae.sh $CHORIZO $user   elige "con o sin tributos" y luego
+
+                       llama a     ./wsfe.exe $CUIT $args $user
+                       escribe     /master/intercambio/WSERVICE/$emp/$user/Logs/facele.log
+
+
+##############################################################################
+
+OPERACION:
+            Cada usuario recibe en su carpeta de Logs (/master/intercambio/WSERVICE/$emp/$user/Logs) los archivos que no se pisan (queda registro)
+            y en su directorio de trabajo para facturación electrónica (/master/intercambio/WSERVICE/$emp/$user) los archivos que se pisan en cada
+            operación.
+            En un servidor multiempresa/multiusuario los certificados y el ta.xml son comunes a todos los usuarios de la misma empresa.
+
+##############################################################################
+
+MANUAL DEL MAKEFILE:
+$ make cleanall	        ->  INICIALIZA. LIMPIA TODO: deja solo fuentes felix. borra tambien fuentes gsoap!!!!!!!!!!!!!!!!!!!!!.
+$ make clean        	-> 	borra *.o *.exe No borra fuentes gsoap.
+$ make genera           -> 	COMPILA GSOAP: compila librerias gsoap para Producción.
+$ make genera_homo      -> 	COMPILA GSOAP: compila librerias gsoap para Homologación.
+$ make	                -> 	COMPILA TODO.
+
+##############################################################################
+
+EN EL SISTEMA.
+
+En E-C-C Permisos de Acceso a Programas / impresoras:
+Programa “sto1102”. Valor de Campos <HOME>, la variable FE_CARPETA_RAIZ indica
+la carpeta raíz donde estan los ejecutables de felix.
+Para mantener un estándar su valor debería ser: /master/intercambio/WSERVICE/$emp/
+pero podria ser cualquier otro.
+En general para un sistema multiempresa tendremos seteada en cada empresa la carpeta
+correspondiente FE_CARPETA_RAIZ -> /master/intercambio/WSERVICE/$emp/
+
+En E-C-B USUARIOS: Permisos de Acceso a Cbtes / Tipos CtaCtes. Usuario <F1>, elegimos
+el usuario y colocamos en cualquier atributo (1 a 5) Atr: FE_CARPETA_WS, grabamos <F5>.
+Ahora el sistema enviara como segundo argumento a los shells que estan en $CUSTOM (e
+inician los procesos FE) el nombre de usuario, que debe coincidir necesariamente con el
+nombre de una carpeta creada previamente, dentro del directorio raiz de felix.
+
+En E-A-E Comprobantes Asociados a Talonarios: poner comprobante y talón. Pulsar
+<HOME> sobre ATRIBUTOS y colocar la leyenda “VarioIVA” en cualquier atributo.
+Grabar: <F5>.
+Con esto el sistema nos dejara mezclar alicuotas de IVA 21% y 10.5% en un mismo
+comprobante.
+
+Entonces cada usuario tendrá su carpeta /master/intercambio/WSERVICE/$emp/$user.
+El TA (ta.xml) se encontrará siempre en la carpeta raiz $emp ya que es comun a todos los
+usuarios de una misma empresa.
+Los archivos necesarios (cae.txt, error.txt, ??_????_????????.xml) se depositan en la
+carpeta de usuario, evitando asi condiciones de competencia por archivos compartidos.
+El registro de todas las operaciones FE que realiza un usuario queda en su carpeta
+$user/Logs.
+
+##############################################################################
+##############################################################################
+##############################################################################
