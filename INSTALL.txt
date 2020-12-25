@@ -21,6 +21,8 @@ $ wget https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL
 
 CHEQUEAR LIBRERIAS NECESARIAS:
 
+#openSuse
+
 # zypper se gsoap
 Obteniendo los datos del repositorio...
 Leyendo los paquetes instalados...
